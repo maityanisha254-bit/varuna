@@ -1,4 +1,8 @@
 const path = require('path');
+const dns = require('dns');
+
+dns.setServers(['8.8.8.8']);
+
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -55,6 +59,7 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
   message: { success: false, message: 'Too many attempts, please try again later' },
 });
+
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 
@@ -63,7 +68,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ success: true, message: 'VARUNA API is running', timestamp: new Date() });
+  res.status(200).json({
+    success: true,
+    message: 'VARUNA API is running',
+    timestamp: new Date()
+  });
 });
 
 // API routes
@@ -81,8 +90,11 @@ app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
-  console.log(`[VARUNA API] Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+  console.log(
+    `[VARUNA API] Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`
+  );
 });
 
 module.exports = app;
